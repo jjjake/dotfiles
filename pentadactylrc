@@ -1,0 +1,33 @@
+"hg6837
+
+loadplugins '\.(js|penta)$'
+group user
+map -count -modes=n,v , <count><Leader>
+map -count -modes=n,v <C-f> clear
+map -count -modes=n,v C ;C
+map -count -modes=n,v e <count>:o<Space>http://archive.org/details/
+map -count -modes=n,v E <count>:o<Space>http://archive.org/details/<M-v><Return>
+map -count -modes=n,v h <count>gT
+map -count -modes=n,v H <count>:tabmove<Space>-1<Return>
+map -count -modes=n,v J <count>:back<Return>
+map -count -modes=n,v K <count>:forward<Return>
+map -count -modes=n,v l <count>gt
+map -count -modes=n,v L <count>:tabmove<Space>+1<Return>
+map -count -modes=n,v P <count>:o<Space>goo<Space><S-Insert><Return>
+map -count -modes=n,v s <count>:stop<Return>
+map -count -modes=n,v S <count>:o<Space>http://stackoverflow.com/search?q=
+map -count -modes=n,v T <count>:o<Space>https://twitter.com/#!/search/realtime/
+map -count -modes=n,v w <count>:o<Space>http://waybackmachine.org/*/
+map -count -modes=n,v W <count>yo<Space>http://waybackmachine.org/*/<M-v><Return>
+map -count -modes=n,v Y <count>:o<Space>http://www.hnsearch.com/search#request/all&q=
+map -count -modes=n,v <Leader>j <count>:runtime<Space>plugins/arc-url.js<Return>o<Space>http://archive.org/metadata/<M-v><Return>
+map -count -modes=n,v <Leader>m <count>:runtime<Space>plugins/arc-url.js<Return>o<Space>http://archive.org/metadata/<M-v>/metadata<Return>
+map -count -modes=n,v <Leader>f <count>:runtime<Space>plugins/arc-url.js<Return>o<Space>http://archive.org/metadata/<M-v>/files<Return>
+map -count -modes=n,v <Leader>i <count>:runtime<Space>plugins/arc-url.js<Return>o<Space>http://archive.org/item-mgr.php?identifier=<M-v><Return>
+map -count -modes=n,v <Leader>h <count>:runtime<Space>plugins/arc-url.js<Return>o<Space>http://archive.org/history/<M-v><Return>
+map -count -modes=n,v <Leader>d <count>:runtime<Space>plugins/arc-url.js<Return>o<Space>http://archive.org/download/<M-v><Return>
+map -count -modes=n,v <Leader>r <count>O&reCache=1<Return>
+set defsearch=duckduckgo
+set guioptions=BCsr
+set hintkeys=asdfghjkl
+set urlseparator=,,s

@@ -1,0 +1,157 @@
+" basics
+"_________________________________________________________________________________________
+set nocompatible 
+"set mouse=a
+set hidden
+set visualbell
+set noerrorbells
+set number
+set showmatch
+set ruler
+
+set showtabline=2
+set shiftwidth=4
+set autoindent
+set smartindent
+set expandtab 
+set tabstop=4 
+
+set background=dark
+colorscheme vimbrant
+syntax on
+
+
+" search
+"_________________________________________________________________________________________
+set ignorecase
+set incsearch
+set hlsearch
+set smartcase
+
+
+" history
+"_________________________________________________________________________________________
+set history=1000
+set undodir=$HOME/.config/vim/undo 
+set undofile                
+set undoreload=1000
+set undolevels=1000
+set nobackup
+set noswapfile
+
+
+" keymap
+"_________________________________________________________________________________________
+set pastetoggle=<F2>
+let mapleader=","
+
+" Navigate windows with '<leader>hjkl'. 
+" If a window doesn't exist -- create it.
+function! WinMove(key) 
+  let t:curwin = winnr()
+  exec "wincmd ".a:key
+  if (t:curwin == winnr()) "we havent moved
+    if (match(a:key,'[jk]')) "were we going up/down
+      wincmd v
+    else
+      wincmd s
+    endif
+    exec "wincmd ".a:key
+  endif
+endfunction
+
+map Y y$
+map <leader>h              :call WinMove('h')<cr>
+map <leader>k              :call WinMove('k')<cr>
+map <leader>l              :call WinMove('l')<cr>
+map <leader>j              :call WinMove('j')<cr>
+map <leader>wc :wincmd q<cr>
+map <leader>wr <C-W>r
+
+nmap <Leader>s :setlocal spell! spelllang=en_us<CR>
+nmap <space> zz
+nmap <silent> ,/ :nohlsearch<CR>
+nmap ,<CR> :w<CR>:!./%<CR>
+
+nnoremap ; :
+nnoremap ,<CR> :w<CR>:!./%<CR>
+nnoremap j gj
+nnoremap k gk
+nnoremap <leader>a :Ack
+
+cmap w!! w !sudo tee % >/dev/null
+
+
+" vundle
+"_________________________________________________________________________________________
+filetype off
+set rtp+=~/.vim/bundle/vundle/
+call vundle#rc()
+Bundle 'gmarik/vundle'
+
+Bundle 'Lokaltog/vim-easymotion'
+Bundle 'SirVer/ultisnips'
+
+filetype plugin indent on
+
+
+" plugins
+"_________________________________________________________________________________________
+" pyflakes
+"let b:did_pyflakes_plugin=0
+"let g:pyflakes_use_quickfix = 0
+     
+" EasyMotion
+let g:EasyMotion_leader_key="<Leader>"  
+    
+" Enable omni completion.
+autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
+autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
+autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
+autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
+autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
+
+" UtiliSnips
+set runtimepath+=~/.vim/bundle/ultisnips
+let g:UltiSnipsExpandTrigger = '<c-l>'
+let g:UltiSnipsJumpForwardTrigger = '<c-j>'
+let g:UltiSnipsJumpBackwardTrigger = '<c-k>'
+let g:UltiSnipsListSnippets = '<c-m>'
+
+" WordTube
+    function! WordTube()
+        set wrap
+        set linebreak
+        set nonumber 
+        set nolist
+        set textwidth=0
+        set wrapmargin=0
+        set formatoptions+=l
+        setlocal spell spelllang=en_us
+    endfunction
+    map <Leader>W :call WordTube()<CR>
+" }
+
+" Session functions {
+    function! MakeSession()
+      let b:sessiondir = $HOME . "/.vim/sessions" . getcwd()
+      if (filewritable(b:sessiondir) != 2)
+        exe 'silent !mkdir -p ' b:sessiondir
+        redraw!
+      endif
+      let b:filename = b:sessiondir . '/session.vim'
+      exe "mksession! " . b:filename
+    endfunction
+
+    function! LoadSession()
+      let b:sessiondir = $HOME . "/.vim/sessions" . getcwd()
+      let b:sessionfile = b:sessiondir . "/session.vim"
+      if (filereadable(b:sessionfile))
+        exe 'source ' b:sessionfile
+      else
+        echo "No session loaded."
+      endif
+    endfunction
+    "au VimEnter * nested :call LoadSession()
+    "au VimLeave * :call MakeSession()
+" }

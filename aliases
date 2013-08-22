@@ -1,0 +1,121 @@
+#!/bin/bash
+
+
+# universal
+#_________________________________________________________________________________________
+alias 'mv=mv -i'
+alias 'cp=cp -i'
+alias 'mkdir=mkdir -p'
+alias 'j=jobs -l'
+
+# Linux configuration
+if [[ $(uname) == "Linux" ]] ; then
+    #set mouse=a
+    #set ttymouse=xterm2
+    export PYTHONPATH=$PYTHONPATH:/petabox/sw/lib/python:/usr/lib/python2.7/dist-packages
+fi
+
+function iacurl() {
+    curl --cookie "logged-in-sig=$LOGGED_IN_SIG; logged-in-user=$LOGGED_IN_USER" $*
+}
+
+function count() {
+    awk '{ sum += $1 } END { print sum }' $1
+}
+
+function cmd_timer() {
+    /usr/bin/time -f "\nCPU\tElapsed\tUser\tSystem\tMemory\tStatus\n%P\t%E\t%U\t%S\t%M\t%x\n" $*
+}
+
+
+# OSX
+#_________________________________________________________________________________________
+if [[ $(uname) == "Darwin" ]] ; then
+    alias 'ls=gls --color -F'
+    alias 'l=gls --color -Fltr'
+    alias 'll=gls --color -Faltr'
+
+    function home() {
+        ssh -t -A $* jake@vm-home1.us.archive.org
+    }
+
+    function mount-vm() {
+        sshfs jake@home.us.archive.org:/home/jake/ /Users/jake/vm-home 
+        sshfs jake@collections.us.archive.org:/1 /Users/jake/vm-collections
+    }
+fi
+
+
+# Linux
+#_________________________________________________________________________________________
+if [[ $(uname) == "Linux" ]] ; then
+    alias 'ls=ls --color'
+    alias 'ls=ls --color -F'
+    alias 'l=ls --color -Fltr'
+    alias 'll=ls --color -Faltr'
+fi
+
+
+# PETABOX
+#_________________________________________________________________________________________
+if [[ $(hostname) =~ "archive.org" ]]; then 
+
+    alias arc="/home/jake/.tmux-init.bash"
+    
+    function phpr() { 
+        echo | php -B 'require_once("/petabox/setup.inc");' -E "$@"; 
+    }
+
+    function lockblock() {
+        $HOME/scripts/lock_delete_dark_user.py $1
+    }
+
+    function s3shuffle() {
+        /usr/bin/python /home/samuel/gitpb/util/s3-redrows-needing-shuffle.py
+    }
+
+    function rerun() {
+        #http://www-tracey.us.archive.org/log_show.php?task_id=165912371&goto=history
+        task_id="$1"
+        identifier="$2"
+        curl -X POST --cookie "logged-in-sig=$LOGGED_IN_SIG; logged-in-user=$LOGGED_IN_USER" \
+                     --data-urlencode submit_rerun_x=rerun \
+                     --data-urlencode task_id\[\]=$task_id \
+                     "http://archive.org/history/$identifier"
+    }
+
+    # aliases from /home/tracey/aliases
+    fixmeta() {
+        XML=_meta.xml
+        if [ "$#" == "2" ]; then
+            XML=_files.xml
+        elif [ "$#" == "3" ]; then
+            XML=_reviews.xml
+        elif [ "$#" != "1" ]; then
+            echo "Usage: <identifier>"; 
+            echo "Usage: <identifier> <2nd arg to mean fix _files.xml instead>";
+            echo "Usage: <identifier> <> <3rd arg to mean fix _reviews.xml instead>";
+            echo "Will find primary's _meta.xml and reencode/fix it and print cmd to submit it up"; return;
+        fi;
+        set -x
+        ID=$1
+        rm -rf /tmp/${USER}-fixmeta/
+        mkdir /tmp/${USER}-fixmeta/
+        cd /tmp/${USER}-fixmeta/
+        rmeta=`curl -s -q "archive.org/services/find_file.php?file=$ID&loconly=1&nobu=1" | cut -f 2,4 -d '"' | tr -d '"' | fgrep archive.org | sort -u | perl -ne 'chop; s=/(\d+)/items/(.*)=/items_$1/$2=; print "rsync://$_/${2}"'`
+        # perl fixes whack char sequences in reviews from damn hippies' MS WORD, etc 8-)
+        rsync $rmeta$XML .
+        xmllint --recover --encode UTF-8 *$XML | perl -pe 's=[\xC3\x83\xC2\x82]{10,32766}= =g' > two.xml
+        #xmllint --recover *$XML > two.xml
+        set +x;
+        line;
+        diff *$XML two.xml;
+        chmod 666 *$XML two.xml;
+        line;
+        mkdir -p /home/$USER/public_html/fixed/;
+        cp two.xml /home/$USER/public_html/fixed/$ID$XML;
+        set -x;
+        echo phpr "new ContribSubmit(array(update_mode=>1, submitter=>'$USER@archive.org', 'from_url'=>'http://archive.org/~$USER/fixed/$ID$XML', item_identifier=>'$ID'));";
+        set +x;
+    }
+fi

@@ -1,0 +1,23 @@
+#!/bin/bash
+
+dotfiles_dir=$HOME/.config/dotfiles
+cd $dotfiles_dir
+
+ln -sf $dotfiles_dir/zsh/.zshenv $HOME/.zshenv
+ln -sf $dotfiles_dir/bashrc $HOME/.bashrc
+ln -sf $dotfiles_dir/aliases $HOME/.aliases
+
+ln -sf $dotfiles_dir/vim/vimrc $HOME/.vimrc
+ln -sfh $dotfiles_dir/vim $HOME/.vim
+mkdir -p $HOME/.vim/undo
+
+ln -sf $dotfiles_dir/tmux/tmux.conf $HOME/.tmux.conf
+ln -sf $dotfiles_dir/tmux/tmux-init.bash $HOME/.tmux.conf
+
+if [[ $(uname) == "Darwin" ]] ; then
+    ln -sf $dotfiles_dir/pentadactylrc $HOME/.pentadactylrc
+fi
+
+if [ ! -d $dotfiles_dir/vim/bundle/vundle ]; then
+    git clone https://github.com/gmarik/vundle.git $dotfiles_dir/vim/bundle/vundle
+fi
