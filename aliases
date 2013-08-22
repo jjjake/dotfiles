@@ -7,6 +7,7 @@ alias 'mv=mv -i'
 alias 'cp=cp -i'
 alias 'mkdir=mkdir -p'
 alias 'j=jobs -l'
+alias dotfiles="$HOME/.config/dotfiles/bin/bootstrap"
 
 # Linux configuration
 if [[ $(uname) == "Linux" ]] ; then
