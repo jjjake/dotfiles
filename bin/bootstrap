@@ -6,13 +6,14 @@ cd $dotfiles_dir
 ln -sf $dotfiles_dir/zsh/.zshenv $HOME/.zshenv
 ln -sf $dotfiles_dir/bashrc $HOME/.bashrc
 ln -sf $dotfiles_dir/aliases $HOME/.aliases
+ln -sf $dotfiles_dir/lessfilter $HOME/.config/dotfiles/lessfilter
 
 ln -sf $dotfiles_dir/vim/vimrc $HOME/.vimrc
 ln -sfh $dotfiles_dir/vim $HOME/.vim
 mkdir -p $HOME/.vim/undo
 
 ln -sf $dotfiles_dir/tmux/tmux.conf $HOME/.tmux.conf
-ln -sf $dotfiles_dir/tmux/tmux-init.bash $HOME/.tmux.conf
+ln -sf $dotfiles_dir/tmux/tmux-init.bash $HOME/.tmux-init.bash
 
 if [[ $(uname) == "Darwin" ]] ; then
     ln -sf $dotfiles_dir/pentadactylrc $HOME/.pentadactylrc
